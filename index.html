@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Demo</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    #box { width: 100%; height: 200px; font-size: 16px; padding: 10px; }
+    #status { color: gray; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h3>Type here — other browser will sync</h3>
+  <textarea id="box" placeholder="Start typing..."></textarea>
+  <div id="status">connecting...</div>
+
+  <script>
+    const box = document.getElementById('box');
+    const status = document.getElementById('status');
+    
+
+    // if you're trying to run this locally change the IP here to your local ip 
+    // in powershell type ipconfig and you will find IPv4 address , replace the current one with you address.
+    // good to go , start run the program , on any other browser / device make sure you are conneced to the same network and run your_ip:8080;
+    
+    const ws = new WebSocket('ws://192.168.113.26:8080/ws');
+
+    ws.onopen = () => status.textContent = 'connected ✓';
+    ws.onclose = () => status.textContent = 'disconnected';
+
+    // receive from server → update textarea
+    ws.onmessage = (e) => {
+      box.value = e.data;
+    };
+
+    // send on every keystroke
+    box.addEventListener('input', () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(box.value);
+      }
+    });
+  </script>
+</body>
+</html>
